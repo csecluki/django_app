@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block extra_style %}
+<link rel="stylesheet" type="text/css" href="{% static 'article.css' %}"/>
+{% endblock extra_style %}
+
+{% block content %}
+
+<div class="article-header">
+
+  {% if request.user.is_staff %}
+    <a class="moderation-action" href="{% url 'article_edit' article.slug %}">Edit</a>
+  {% endif %}
+
+  <h1 class="article-title">
+    {{ article.title }}
+  </h1>
+
+  <p class="article-info">
+    author: {{ article.author }} | published: {{ article.publish_date|date:"d-m-Y H:i" }}
+    {% if article.publish_date|date:"d.m.Y H:i" != article.update_date|date:"d-m-Y H:i" %}
+       | last update: {{ article.update_date|date:"d-m-Y H:i" }}
+    {% endif %}
+  </p>
+</div>
+
+<div class="article-content">
+  {% for paragraph in article.split_content %}
+    <p class="article">{{ paragraph }}</p>
+  {% endfor %}
+</div>
+
+<div class="article-stats">
+  {% if user in article.likes.all %}
+  {% else %}
+  {% endif %}
+  <p id="like-info">likes: </p>
+  <p id="like-counter">{{ article.like_counter }}</p>
+  <button id="like-btn" class="like-button" style="background: {% if user in article.likes.all %}green{% else %}lightgreen{% endif %}">Like</button>
+</div>
+
+<script>
+  $(".like-button").click(function() {
+    $.ajax({
+      url: 'like/',
+      type: 'POST',
+      data: {
+        'csrfmiddlewaretoken': '{{ csrf_token }}'
+      },
+      error: function(response) {
+        console.log
+        if (response.status == 401) {
+          window.location = "{% url 'login' %}?next={{ request.path }}"
+        }
+      },
+      success: function(response) {
+        if (response.liked == true) {
+          setLikeButtonBackground('green');
+        }
+        else if (response.liked == false) {
+          setLikeButtonBackground('lightgreen');
+        }
+        refreshLikeCounter(response.counter);
+      }
+    });
+  });
+</script>
+
+{% endblock content %}

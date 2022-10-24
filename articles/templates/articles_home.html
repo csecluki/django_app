@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block extra_style %}
+<link rel="stylesheet" type="text/css" href="{% static 'article.css' %}"/>
+{% endblock extra_style %}
+
+{% block content %}
+
+{% if perms.articles.add_article %}
+  <div class="moderation-options">
+    <a class="moderation-action" href="{% url 'article_add' %}">Add article</a>
+  </div>
+{% endif %}
+
+<div class="article-list">
+
+  {% for article in page_obj %}
+    <div class="article-item">
+      <a class="article-item" href="{% url 'article_detail' article.slug %}">
+          <h1 class="article-item">
+            {{ article.title }}
+          </h1>
+      </a>
+      {% if not article.status %}
+        <button id="publish-id-{{ forloop.counter }}" class="moderation-btn" value="{{ article.slug }}">
+          Publish
+        </button>
+      {% endif %}
+        <p class="article-item">{{ article.get_lead }}</p>
+        <div class="article-stats">
+          <p class="article-item article-stats">Likes: {{ article.like_counter }}</p>
+        </div>
+    </div>
+  {% endfor %}
+
+</div>
+
+<div class="paginator">
+  <span>
+    {% if page_obj.has_previous %}
+      <a href="?page={{ page_obj.previous_page_number }}"><i id="arrow-left" class="arrow"></i></a>
+    {% endif %}
+    <span>
+      page {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}
+    </span>
+    {% if page_obj.has_next %}
+      <a href="?page={{ page_obj.next_page_number }}"><i id="arrow-right" class="arrow"></i></a>
+    {% endif %}
+  </span>
+</div>
+
+<script>
+  $(".moderation-btn").click(function() {
+    const btnId = $(this).attr('id');
+    $.ajax({
+      url: $(this).val() + '/publish/',
+      type: 'POST',
+      data: {
+        'csrfmiddlewaretoken': '{{ csrf_token }}'
+      },
+      error: function(response) {
+        if (response.status == 401 || response.status == 403) {
+          showToast(response.detail);
+        }
+      },
+      success: function(response) {
+          showToast("Article published");
+          removePublishButton(btnId);
+      }
+    });
+  });
+</script>
+
+{% endblock content %}

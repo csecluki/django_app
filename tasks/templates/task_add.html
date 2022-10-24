@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block extra_style %}
+<link rel="stylesheet" type="text/css" href="{% static 'task.css' %}"/>
+{% endblock extra_style %}
+
+{% block content %}
+
+    <p>Here goes task form</p>
+
+    <form method="POST" action="">
+        {% csrf_token %}
+        {{ form }}
+        <input type="submit" value="Save">
+    </form>
+
+{% endblock content %}

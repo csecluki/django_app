@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block extra_style %}
+{% endblock extra_style %}
+
+{% block content %}
+  <div>
+    <h1 class="centered">Task home view</h1>
+    <div class="centered"><a href="{% url 'task_add' %}">add new task</a></div>
+  </div>
+
+  <div class="centered">
+    <label for="hide-done-tasks">
+      <input type="checkbox" id="hide-done-tasks" onclick="hideDoneTasksHandler(this)" checked>Hide done
+    </label>
+  </div>
+
+  <div>
+    <table id="task-table" class="centered">
+      <tr>
+        <th class="sortable" onclick="sortTable(0)">Name</th>
+        <th class="sortable" onclick="sortTable(1)">Status</th>
+        <th class="sortable" onclick="sortTable(2)">Last Update</th>
+        <th>Change status</th>
+        <th>Actions</th>
+      </tr>
+      {% for task in tasks %}
+          <tr id="table-row-{{ forloop.counter }}" class="task-table-row">
+            <td>{{ task.name }}</td>
+            <td id="table-status-{{ forloop.counter }}" class="table-row-status">{{ task.get_status_display }}</td>
+            <td id="table-update-date-{{ forloop.counter }}">{{ task.last_update|date:"d-m-Y H:i" }}</td>
+            <td>
+              {% if task.status != 2 %}
+                <button id="table-status-btn-{{ forloop.counter }}" class="status-btn" value="{{ task.slug }}">
+                  Next step
+                </button>
+              {% endif %}
+            </td>
+            <td>
+              <a id="modify-id-{{ forloop.counter }}" href="{% url 'task_modify' task.slug %}">
+                <img class="icon" src="{% static 'modify.png' %}">
+              </a>
+              <button id="remove-btn-{{ forloop.counter }}" class="remove-btn icon" value="{{ task.slug }}">
+                <img class="icon" src="{% static 'remove.png' %}">
+              </button>
+            </td>
+          </tr>
+      {% endfor %}
+    </table>
+  </div>
+
+<script>
+  window.onload = function() {
+    hideDoneTasksHandler(document.getElementById('hide-done-tasks'));
+  };
+
+  function hideDoneTasksHandler(cb) {
+    var tr = document.getElementsByClassName("task-table-row")
+    for (i = 0; i < tr.length; i++) {
+      if (tr[i].getElementsByTagName("td")[1].textContent === 'Done') {
+        tr[i].style.display = cb.checked ? 'none' : '';
+      }
+    }
+  }
+
+  $(".remove-btn").click(function() {
+    const btnId = $(this).attr('id').slice(-1);
+    $.ajax({
+      url: $(this).val() + '/remove/',
+      type: 'POST',
+      data: {
+        'csrfmiddlewaretoken': '{{ csrf_token }}'
+      },
+      error: function(response) {
+        showToast(response.detail);
+      },
+      success: function(response) {
+        removeTableRowById(btnId);
+      }
+    });
+  });
+
+  $(".status-btn").click(function() {
+    const btnId = $(this).attr('id').slice(-1);
+    $.ajax({
+      url: $(this).val() + '/change-status/',
+      type: 'POST',
+      data: {
+        'csrfmiddlewaretoken': '{{ csrf_token }}'
+      },
+      error: function(response) {
+        showToast(response.detail);
+      },
+      success: function(response) {
+        if (response.status === "Done") {
+          removeChangeStatusButton(btnId);
+        }
+        updateTaskStatus(btnId, response.status);
+        updateLastUpdateDate(btnId, response.update_date);
+      }
+    });
+  });
+</script>
+
+{% endblock content %}

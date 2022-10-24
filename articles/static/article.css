@@ -1,0 +1,62 @@
+h1.article-title {
+    margin: 0px 0 0px 0;
+}
+
+p.article-info {
+    display: inline;
+    font-size: 16px;
+    margin: 3px 0 3px 15px;
+}
+
+div.article-list {
+}
+
+div.article-item {
+    padding: 10px 10px 10px 10px;
+    margin: 0 0 30px 0;
+    border-radius: 10px;
+}
+
+h1.article-item {
+    display: inline;
+}
+
+p.article-item {
+    display: block;
+    font-size: 16px;
+    text-align: justify;
+    padding: 10px 0 0 0;
+    margin-left: 10px;
+}
+
+div.article-content {
+    margin: 50px 0 30px 0;
+}
+
+p.article {
+    display: block;
+    text-align: justify;
+    font-size: 18px;
+    margin: 20px 0 0 0;
+}
+
+div.article-stats {
+    display: inline;
+}
+
+#like-btn {
+    margin: 5px;
+}
+
+#like-counter {
+    display: inline;
+}
+
+#like-info {
+    display: inline;
+}
+
+#edit {
+    display: inline;
+    float: right;
+}

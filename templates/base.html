@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/x-icon" href="{% static 'favicon.ico' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'style.css' %}"/>
+    {% block extra_style %}
+    {% endblock extra_style %}
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script type="text/javascript" src="{% static 'main.js' %}"></script>
+    <title>Blog.com</title>
+</head>
+<body>
+    <div class="navbar">
+        {% include "navbar.html" %}
+    </div>
+
+    <div class="body">
+        <div class="content">
+            {% block content %}
+            {% endblock content %}
+        </div>
+
+        <div class="right-panel">
+            <p style="font-size: 32px">R</p><br>
+            <p style="font-size: 32px">I</p><br>
+            <p style="font-size: 32px">G</p><br>
+            <p style="font-size: 32px">H</p><br>
+            <p style="font-size: 32px">T</p><br>
+            <p style="font-size: 32px"></p><br>
+            <p style="font-size: 32px">P</p><br>
+            <p style="font-size: 32px">A</p><br>
+            <p style="font-size: 32px">N</p><br>
+            <p style="font-size: 32px">E</p><br>
+            <p style="font-size: 32px">L</p><br>
+        </div>
+    </div>
+
+    <footer>
+        {% include "footer.html" %}
+    </footer>
+
+    <div id="toast"></div>
+
+</body>
+</html>
